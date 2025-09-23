@@ -1,0 +1,39 @@
+@tailwind base;  
+@tailwind components;  
+@tailwind utilities;  
+  
+:root {  
+  --foreground-rgb: 0, 0, 0;  
+  --background-start-rgb: 214, 219, 220;  
+  --background-end-rgb: 255, 255, 255;  
+}  
+  
+@media (prefers-color-scheme: dark) {  
+  :root {  
+    --foreground-rgb: 255, 255, 255;  
+    --background-start-rgb: 0, 0, 0;  
+    --background-end-rgb: 0, 0, 0;  
+  }  
+}  
+  
+body {  
+  color: rgb(var(--foreground-rgb));  
+  background: linear-gradient(  
+      to bottom,  
+      transparent,  
+      rgb(var(--background-end-rgb))  
+    )  
+    rgb(var(--background-start-rgb));  
+}  
+  
+.prayer-card {  
+  @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200;  
+}  
+  
+.btn-primary {  
+  @apply bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200;  
+}  
+  
+.btn-secondary {  
+  @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200;  
+}  
