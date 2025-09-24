@@ -7,12 +7,12 @@ import { generateAdaptiveResponse } from "@/lib/adaptiveEngine";
 
 export default function NewPrayerPage() {
   const [input, setInput] = useState("");
-  const [response, setResponse] = useState<{ scripture: string; prayer: string } | null>(null);
+  const [response, setResponse] = useState<{ scripture: string; message: string } | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const result = generateAdaptiveResponse(input);
-    setResponse({ scripture: result.scripture, prayer: result.prayer });
+    setResponse({ scripture: result.scripture, message: result.message });
   };
 
   return (
@@ -50,9 +50,11 @@ export default function NewPrayerPage() {
       {/* Adaptive Response Section */}
       {response && (
         <div className="mt-6 p-4 border rounded bg-gray-50">
-          <h2 className="text-lg font-semibold mb-2">Pastor Hope’s Response</h2>
-          <p className="italic text-gray-700">{response.scripture}</p>
-          <p className="mt-2">{response.prayer}</p>
+          <h2 className="text-lg font-semibold mb-3">Pastor Hope’s Response</h2>
+          <p className="italic text-gray-800 mb-4">{response.scripture}</p>
+          <div className="space-y-4 text-gray-900 whitespace-pre-line">
+            {response.message.trim()}
+          </div>
         </div>
       )}
     </div>
