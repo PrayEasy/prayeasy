@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function HomePage() {
   const [prayerText, setPrayerText] = useState("");
-  const [prayerResponse, setPrayerResponse] = useState<string | null>(null);
+  const [prayerResponse, setPrayerResponse] = useState<any>(null);
   const [loadingPrayer, setLoadingPrayer] = useState(false);
 
   const [theme, setTheme] = useState("");
@@ -23,9 +23,9 @@ export default function HomePage() {
         body: JSON.stringify({ prayerText }),
       });
       const data = await res.json();
-      setPrayerResponse(data.response);
+      setPrayerResponse(data); // full JSON object now
     } catch (err) {
-      setPrayerResponse("⚠️ Error: Unable to connect to Pastor Hope.");
+      setPrayerResponse({ error: "⚠️ Unable to connect to Pastor Hope." });
     } finally {
       setLoadingPrayer(false);
     }
@@ -100,22 +100,31 @@ export default function HomePage() {
               cursor: "pointer",
             }}
           >
-            {loadingPrayer ? "Pastor Hope is praying..." : "Pray with Me"}
+            {loadingPrayer ? "Pastor Hope is praying..." : "Submit Your Prayer"}
           </button>
 
-          {prayerResponse && (
+          {prayerResponse && !prayerResponse.error && (
             <div
               style={{
                 marginTop: "1rem",
-                whiteSpace: "pre-line",
                 background: "#f9f9f9",
                 padding: "1rem",
                 borderRadius: "6px",
                 border: "1px solid #eee",
               }}
             >
-              {prayerResponse}
+              <h3>Pastor Hope’s Prayer Response</h3>
+              <p><strong>{prayerResponse.greeting}</strong></p>
+              <p>{prayerResponse.acknowledgement}</p>
+              <p><em>{prayerResponse.scripture}</em></p>
+              <p>{prayerResponse.pastoral_voice}</p>
+              <p>{prayerResponse.prayer}</p>
+              <p><strong>{prayerResponse.declaration}</strong></p>
             </div>
+          )}
+
+          {prayerResponse?.error && (
+            <p style={{ color: "red" }}>{prayerResponse.error}</p>
           )}
         </div>
 
