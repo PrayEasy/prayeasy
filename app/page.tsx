@@ -52,7 +52,7 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "2rem" }}>
+    <div style={{ fontFamily: "sans-serif", padding: "2rem", background: "linear-gradient(to bottom, #7C3AED, #A78BFA)", minHeight: "100vh" }}>
       <h1>🙏 PrayEasy</h1>
       <p>
         <i>Sword of the Spirit is the Word of God.</i>
