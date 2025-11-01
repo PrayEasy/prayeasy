@@ -23,7 +23,7 @@ export default function HomePage() {
         body: JSON.stringify({ prayerText }),
       });
       const data = await res.json();
-      setPrayerResponse(data); // full JSON object now
+setPrayerResponse(data.response); // Extract the nested response object
     } catch (err) {
       setPrayerResponse({ error: "⚠️ Unable to connect to Pastor Hope." });
     } finally {
