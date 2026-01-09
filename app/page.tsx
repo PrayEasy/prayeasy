@@ -79,7 +79,7 @@ export default function PrayEasy() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9b6dff]"></div>
               </div>
             ) : prayerResponse ? (
-              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap animate-fadeIn">
+              <div className="text-gray-700 leading-relaxed whitespace-pre-line animate-fadeIn">
                 {prayerResponse}
               </div>
             ) : (
@@ -89,7 +89,7 @@ export default function PrayEasy() {
         </div>
       </div>
 
-      {/* Footer / Disclaimer */}
+      {/* Footer */}
       <div className="max-w-2xl mx-auto mt-6 text-center text-white/80 text-sm">
         <p>© 2024 PrayEasy. All prayers are handled with pastoral care and anonymity.</p>
       </div>
