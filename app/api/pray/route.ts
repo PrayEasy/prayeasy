@@ -6,6 +6,11 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 export async function POST(req: Request) {
   try {
     const { prayerText } = await req.json();
@@ -22,17 +27,16 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: `You are Pastor Hope, a compassionate and Spirit-led shepherd. Always respond ONLY as valid JSON with the following 6 fields:
-
+          content: `You are Pastor Hope, a compassionate and Spirit-led shepherd. Always respond ONLY as valid JSON with the following 7 fields:
 {
   "greeting": "...",
   "acknowledgement": "...",
   "scripture": "...",
   "pastoral_voice": "...",
   "prayer": "...",
-  "declaration": "..."
+  "declaration": "...",
+  "detected_emotion": "..."
 }
-
 Guidelines:
 - greeting: Warm, personal greeting (1 sentence)
 - acknowledgement: Acknowledge their specific prayer concern with empathy (2-3 sentences)
@@ -40,7 +44,7 @@ Guidelines:
 - pastoral_voice: Pastoral encouragement and wisdom (2-3 sentences)
 - prayer: A heartfelt prayer addressing their specific need (3-4 sentences)
 - declaration: A bold faith declaration (1-2 sentences)
-
+- detected_emotion: Identify the primary emotion detected in the prayer (e.g., Anxiety, Grief, Joy, etc.) in 1-2 words.
 Keep the total response warm, personal, and Spirit-filled. Always return valid JSON only.`,
         },
         {
@@ -48,83 +52,54 @@ Keep the total response warm, personal, and Spirit-filled. Always return valid J
           content: prayerText,
         },
       ],
-      temperature: 0.8,
-      max_tokens: 1000,
+      response_format: { type: "json_object" },
     });
 
-    const responseContent = completion.choices[0]?.message?.content;
-
+    const responseContent = completion.choices[0].message.content;
     if (!responseContent) {
-      throw new Error("No response from Pastor Hope");
+      throw new Error("No content received from OpenAI");
     }
 
-    let parsedResponse;
+    const parsedResponse = JSON.parse(responseContent);
+
+    // Combine the pastoral fields for the UI
+    const fullResponseText = `
+${parsedResponse.greeting}
+
+${parsedResponse.acknowledgement}
+
+${parsedResponse.scripture}
+
+${parsedResponse.pastoral_voice}
+
+${parsedResponse.prayer}
+
+${parsedResponse.declaration}
+    `.trim();
+
+    // SAVE TO SUPABASE
     try {
-      parsedResponse = JSON.parse(responseContent);
-    } catch (parseError) {
-      console.error("Failed to parse Pastor Hope response:", parseError);
-      throw new Error("Invalid response format from Pastor Hope");
-    }
-
-    // Validate all 6 required fields
-    const requiredFields = [
-      "greeting",
-      "acknowledgement",
-      "scripture",
-      "pastoral_voice",
-      "prayer",
-      "declaration",
-    ];
-    const missingFields = requiredFields.filter(
-      (field) => !parsedResponse[field]
-    );
-
-    if (missingFields.length > 0) {
-      console.error("Missing fields:", missingFields);
-      throw new Error(
-        `Incomplete response from Pastor Hope. Missing: ${missingFields.join(", ")}`
-      );
-    }
-
-    // Create full response text for database storage
-    const fullResponse = `${parsedResponse.greeting}\n\n${parsedResponse.acknowledgement}\n\n${parsedResponse.scripture}\n\n${parsedResponse.pastoral_voice}\n\n${parsedResponse.prayer}\n\n${parsedResponse.declaration}`;
-
-    // Save to Supabase (only if environment variables are available)
-    try {
-      if (
-        process.env.NEXT_PUBLIC_SUPABASE_URL &&
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      ) {
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        );
-
-        const { error } = await supabase.from("prayers").insert({
+      const { error } = await supabase.from("prayers").insert([
+        {
           prayer_text: prayerText,
-          response_text: fullResponse,
-        });
+          response_text: fullResponseText,
+          detected_emotion: parsedResponse.detected_emotion,
+        },
+      ]);
 
-        if (error) {
-          console.error("Supabase error:", error);
-          // Don't throw - we still want to return the prayer response
-        }
-      }
+      if (error) console.error("Supabase Insert Error:", error);
     } catch (dbError) {
-      console.error("Database save error:", dbError);
-      // Don't throw - we still want to return the prayer response
+      console.error("Database connection error:", dbError);
     }
 
+    // Return response in the format the UI expects
     return NextResponse.json({
-      response: parsedResponse,
+      response: fullResponseText
     });
   } catch (error: any) {
-    console.error("Pastor Hope API error:", error);
+    console.error("Error in /api/pray:", error);
     return NextResponse.json(
-      {
-        error: "Failed to generate prayer response",
-        details: error.message,
-      },
+      { error: "Failed to generate prayer response" },
       { status: 500 }
     );
   }
