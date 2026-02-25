@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   PrayEasy v2.0 - Blue Gradient Theme
+   Color Palette:
+   - Azure: #007FFF (primary)
+   - Sky: #87CEEB (light accents)
+   - Ocean Breeze: #4A90E2 (interactive)
+   - Aqua: #00CED1 (highlights)
+   - Cobalt: #0047AB (deep accents)
+   ============================================ */
+
+:root {
+  /* Light Mode Colors */
+  --color-azure: #007FFF;
+  --color-sky: #87CEEB;
+  --color-ocean: #4A90E2;
+  --color-aqua: #00CED1;
+  --color-cobalt: #0047AB;
+  
+  /* Background & Foreground */
+  --foreground-rgb: 17, 24, 39;
+  --background-start: #f0f9ff;
+  --background-end: #ffffff;
+  
+  /* Card & Surface Colors */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-hover: #f1f5f9;
+  
+  /* Text Colors */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  
+  /* Border Colors */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+}
+
+.dark {
+  /* Dark Mode Colors */
+  --foreground-rgb: 243, 244, 246;
+  --background-start: #0f172a;
+  --background-end: #1e293b;
+  
+  /* Card & Surface Colors */
+  --surface-primary: #1e293b;
+  --surface-secondary: #0f172a;
+  --surface-hover: #334155;
+  
+  /* Text Colors */
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  
+  /* Border Colors */
+  --border-light: #334155;
+  --border-medium: #475569;
+  
+  /* Adjusted brand colors for dark mode */
+  --color-azure: #3b9eff;
+  --color-sky: #7dd3fc;
+  --color-ocean: #60a5fa;
+  --color-aqua: #22d3ee;
+  --color-cobalt: #3b82f6;
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom right,
+    var(--background-start),
+    var(--background-end)
+  );
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold tracking-tight;
+}
+
+/* ============================================
+   Component Classes
+   ============================================ */
+
+/* Prayer Card */
+.prayer-card {
+  @apply bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 
+         border border-gray-100 dark:border-slate-700
+         hover:shadow-xl hover:shadow-azure-500/10 
+         transition-all duration-300 ease-in-out;
+}
+
+/* Primary Button - Azure gradient */
+.btn-primary {
+  @apply bg-gradient-to-r from-azure-500 to-ocean-400 
+         text-white px-6 py-3 rounded-xl font-semibold
+         hover:from-azure-600 hover:to-ocean-500 
+         shadow-md hover:shadow-lg hover:shadow-azure-500/30
+         transform hover:-translate-y-0.5
+         transition-all duration-300 ease-in-out
+         focus:outline-none focus:ring-2 focus:ring-azure-500 focus:ring-offset-2
+         dark:focus:ring-offset-slate-900;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply bg-white dark:bg-slate-800 
+         text-azure-600 dark:text-azure-400 
+         px-6 py-3 rounded-xl font-semibold
+         border-2 border-azure-500 dark:border-azure-400
+         hover:bg-azure-50 dark:hover:bg-slate-700
+         shadow-sm hover:shadow-md
+         transform hover:-translate-y-0.5
+         transition-all duration-300 ease-in-out
+         focus:outline-none focus:ring-2 focus:ring-azure-500 focus:ring-offset-2;
+}
+
+/* Submit/CTA Button - Larger with glow effect */
+.btn-cta {
+  @apply bg-gradient-to-r from-azure-500 via-ocean-400 to-aqua-500
+         text-white px-8 py-4 rounded-2xl font-bold text-lg
+         shadow-lg shadow-azure-500/30
+         hover:shadow-xl hover:shadow-azure-500/40
+         transform hover:-translate-y-1 hover:scale-[1.02]
+         transition-all duration-300 ease-in-out
+         focus:outline-none focus:ring-4 focus:ring-azure-300
+         active:scale-[0.98];
+}
+
+/* Input Fields */
+.input-field {
+  @apply w-full px-4 py-3 rounded-xl
+         bg-white dark:bg-slate-800
+         border-2 border-gray-200 dark:border-slate-600
+         text-gray-900 dark:text-gray-100
+         placeholder:text-gray-400 dark:placeholder:text-gray-500
+         focus:border-azure-500 dark:focus:border-azure-400
+         focus:ring-4 focus:ring-azure-100 dark:focus:ring-azure-900/30
+         focus:outline-none
+         transition-all duration-200;
+}
+
+.textarea-field {
+  @apply w-full px-4 py-4 rounded-xl
+         bg-white dark:bg-slate-800
+         border-2 border-gray-200 dark:border-slate-600
+         text-gray-900 dark:text-gray-100
+         placeholder:text-gray-400 dark:placeholder:text-gray-500
+         focus:border-azure-500 dark:focus:border-azure-400
+         focus:ring-4 focus:ring-azure-100 dark:focus:ring-azure-900/30
+         focus:outline-none
+         resize-none
+         transition-all duration-200;
+}
+
+/* Glass Effect Card */
+.glass-card {
+  @apply bg-white/80 dark:bg-slate-800/80 
+         backdrop-blur-lg backdrop-saturate-150
+         rounded-2xl shadow-xl 
+         border border-white/20 dark:border-slate-700/50;
+}
+
+/* Section Container */
+.section-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Feature Card */
+.feature-card {
+  @apply p-8 rounded-2xl 
+         bg-gradient-to-br from-white to-sky-50 
+         dark:from-slate-800 dark:to-slate-900
+         border border-sky-100 dark:border-slate-700
+         shadow-lg hover:shadow-xl
+         transform hover:-translate-y-1
+         transition-all duration-300;
+}
+
+/* Response Card - For Pastor Hope responses */
+.response-card {
+  @apply bg-gradient-to-br from-azure-50 to-sky-50 
+         dark:from-slate-800 dark:to-slate-900
+         rounded-2xl p-6 
+         border border-azure-100 dark:border-azure-900/30
+         shadow-lg;
+}
+
+/* Animated Gradient Background */
+.animated-gradient {
+  background: linear-gradient(-45deg, #007FFF, #4A90E2, #87CEEB, #00CED1);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Loading Spinner */
+.spinner {
+  @apply animate-spin rounded-full h-5 w-5 
+         border-2 border-white border-t-transparent;
+}
+
+/* ============================================
+   Responsive Utilities
+   ============================================ */
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-azure-500 via-ocean-400 to-aqua-500 
+           bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-dark {
+    @apply bg-gradient-to-r from-azure-400 via-ocean-300 to-aqua-400 
+           bg-clip-text text-transparent;
+  }
+  
+  .border-gradient {
+    border-image: linear-gradient(135deg, #007FFF, #4A90E2, #87CEEB) 1;
+  }
+}
+
+/* ============================================
+   Smooth Transitions for Dark Mode
+   ============================================ */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Exclude elements that shouldn't transition */
+*:focus,
+button:active,
+.no-transition {
+  transition: none;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-slate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-azure-300 dark:bg-azure-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-azure-400 dark:bg-azure-600;
+}

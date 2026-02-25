@@ -1,42 +1,125 @@
-# PrayEasy - Digital Prayer Journal ✝️
+# 🙏 PrayEasy v2.0
 
-PrayEasy is a modern digital prayer journal built with **Next.js 14**, **Prisma**, and **Tailwind CSS**.  
-It helps believers organize, track, and reflect on their prayers in a simple and beautiful way.
+**Your Digital Prayer Journey with Pastor Hope**
+
+PrayEasy is a compassionate prayer companion application featuring Pastor Hope, an AI spiritual guide that provides Scripture-based responses to your prayers.
 
 ## ✨ Features
-- Create, categorize, and manage personal prayers
-- Track answered prayers over time
-- Private & secure journaling
-- Modern, responsive UI with Tailwind
-- PostgreSQL + Prisma for reliable data handling
 
-## 🚀 Setup
+- **Pray with Pastor Hope**: Share your heart and receive personalized, pastoral responses
+- **Scripture-Based Wisdom**: Every response is grounded in Biblical truth
+- **Insights Explorer**: Search for verses and sermons by theme/emotion
+- **Dark Mode**: Beautiful light and dark themes with system preference detection
+- **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
+- **Privacy Focused**: Your prayers are handled with complete pastoral care and anonymity
 
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/PrayEasy/prayeasy.git
-   cd prayeasy
+## 🎨 Design
+
+PrayEasy v2.0 features a new blue gradient color palette:
+- **Azure** (#007FFF) - Primary brand color
+- **Sky** (#87CEEB) - Light accents
+- **Ocean Breeze** (#4A90E2) - Interactive elements
+- **Aqua** (#00CED1) - Highlights
+- **Cobalt** (#0047AB) - Deep accents
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- OpenAI API key
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd prayeasy
+```
 
 2. Install dependencies:
-bash
-Copy
+```bash
 npm install
+```
 
-3. Setup environment variables:
-Copy .env.example → .env
-Configure your DATABASE_URL
+3. Create a `.env.local` file from the example:
+```bash
+cp env.example .env.local
+```
 
-4. Setup Prisma:
-bash
-Copy
-npm run db:generate
-npm run db:push
+4. Add your OpenAI API key to `.env.local`:
+```
+OPENAI_API_KEY=your-openai-api-key-here
+```
 
-5. Run Dev Server:
-bash
-Copy
+5. Run the development server:
+```bash
 npm run dev
+```
 
-Visit http://localhost:3000 🎉
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-🙏 Built with ❤️ for the prayer community.
+## 🔧 Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `OPENAI_API_KEY` | OpenAI API key for Pastor Hope AI | Yes |
+| `DATABASE_URL` | PostgreSQL connection string (Supabase) | For database features |
+
+## 📦 Deployment (Render)
+
+1. Connect your GitHub repository to Render
+2. Create a new Web Service
+3. Set environment variables in Render dashboard:
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `DATABASE_URL`: Your Supabase database URL (optional)
+4. Deploy!
+
+Or use the `render.yaml` configuration file for automatic setup.
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **AI**: OpenAI GPT-4o-mini
+- **Database**: PostgreSQL (Supabase) with Prisma
+- **Icons**: Lucide React
+
+## 📁 Project Structure
+
+```
+prayeasy/
+├── app/
+│   ├── api/
+│   │   ├── insights/    # Scripture search API
+│   │   └── pray/        # Pastor Hope API
+│   ├── components/      # Reusable UI components
+│   ├── prayers/         # Prayer journal pages
+│   ├── globals.css      # Global styles
+│   ├── layout.tsx       # Root layout
+│   └── page.tsx         # Home page
+├── lib/
+│   ├── adaptiveEngine.ts # Emotion-based responses
+│   └── db.ts            # Database connection
+├── prisma/
+│   └── schema.prisma    # Database schema
+├── sermonInsights.ts    # Sermon matching logic
+└── tailwind.config.js   # Tailwind configuration
+```
+
+## 🔒 Protected Systems (DO NOT MODIFY)
+
+The following files contain proprietary Pastor Hope AI logic and should NOT be modified:
+- `sermonInsights.ts`
+- `lib/adaptiveEngine.ts`
+- `app/api/pray/route.ts` (OpenAI prompts section)
+
+## 📝 License
+
+Private - All rights reserved.
+
+---
+
+*"Sword of the Spirit is the Word of God."*

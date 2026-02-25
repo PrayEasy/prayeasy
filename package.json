@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
-    "@supabase/supabase-js": "^2.78.0",
     "clsx": "^2.0.0",
     "lucide-react": "^0.263.1",
     "next": "14.2.3",
@@ -26,16 +25,15 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "^20.4.5",
     "@types/papaparse": "^5.3.16",
     "@types/react": "^18.2.17",
     "@types/react-dom": "^18.2.7",
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^10.4.27",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.1.6"
   }
 }
