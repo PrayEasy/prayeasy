@@ -1,0 +1,16 @@
+export default function JournalPage() {
+  return (
+    <main style={{ fontFamily: "sans-serif", padding: "3rem", textAlign: "center" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem" }}>
+        📔 My Prayer Journal
+      </h1>
+      <p style={{ fontSize: "1.2rem", maxWidth: "600px", margin: "0 auto", color: "#4B5563" }}>
+        This is where your saved prayers and Pastor Hope’s responses will appear.
+      </p>
+      <p style={{ marginTop: "1rem", fontSize: "1rem", color: "#6B7280" }}>
+        🚧 Feature coming soon — keep praying, and soon you will be able to revisit and reflect
+        on your spiritual journey here.
+      </p>
+    </main>
+  );
+}
