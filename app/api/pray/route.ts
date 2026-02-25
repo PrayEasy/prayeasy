@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@supabase/supabase-js";
 
 // Lazy initialization to avoid build-time errors
 function getOpenAIClient() {
@@ -8,6 +9,30 @@ function getOpenAIClient() {
     throw new Error("OPENAI_API_KEY is not configured");
   }
   return new OpenAI({ apiKey });
+}
+
+// Initialize Supabase client
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
+  }
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+// Simple emotion detection for database logging
+function detectEmotion(input: string): string {
+  const lower = input.toLowerCase();
+  if (lower.includes("sad") || lower.includes("lonely") || lower.includes("depressed") || lower.includes("grief") || lower.includes("loss")) return "Sadness";
+  if (lower.includes("worried") || lower.includes("anxious") || lower.includes("afraid") || lower.includes("fear") || lower.includes("stress")) return "Anxiety";
+  if (lower.includes("thank") || lower.includes("grateful") || lower.includes("blessed")) return "Gratitude";
+  if (lower.includes("hope") || lower.includes("trust") || lower.includes("faith")) return "Hope";
+  if (lower.includes("angry") || lower.includes("frustrated") || lower.includes("upset")) return "Frustration";
+  if (lower.includes("pain") || lower.includes("hurt") || lower.includes("sick") || lower.includes("ill") || lower.includes("heal")) return "Concern";
+  if (lower.includes("overwhelm") || lower.includes("tired") || lower.includes("exhaust")) return "Overwhelm";
+  if (lower.includes("joy") || lower.includes("happy") || lower.includes("celebrate")) return "Joy";
+  return "General";
 }
 
 export async function POST(req: Request) {
@@ -73,6 +98,42 @@ Always respond ONLY as valid JSON with the following 6 fields:
     }
 
     const parsed = JSON.parse(message);
+
+    // SAVE TO SUPABASE DATABASE
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        // Combine the pastoral fields for database storage
+        const fullResponseText = [
+          parsed.greeting,
+          parsed.acknowledgement,
+          parsed.scripture,
+          parsed.pastoral_voice,
+          parsed.prayer,
+          parsed.declaration
+        ].filter(Boolean).join("\n\n");
+
+        const detectedEmotion = detectEmotion(prayerText);
+
+        const { error: dbError } = await supabase.from("prayers").insert([
+          {
+            prayer_text: prayerText,
+            response_text: fullResponseText,
+            detected_emotion: detectedEmotion,
+          },
+        ]);
+
+        if (dbError) {
+          console.error("Supabase Insert Error:", dbError);
+        } else {
+          console.log("Prayer saved to database successfully");
+        }
+      }
+    } catch (dbError) {
+      console.error("Database connection error:", dbError);
+      // Don't fail the request if database save fails
+    }
+
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("Pastor Hope API error:", error);
