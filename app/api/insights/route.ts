@@ -88,3 +88,43 @@ export async function GET(request: Request) {
   const results = findRelevant(query);
   return NextResponse.json({ query, results });
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const query = body.theme || "hope";
+
+    const results = findRelevant(query);
+    
+    // Format the response as a readable string
+    let responseText = "";
+    
+    if (results.verses.length > 0) {
+      responseText += "📖 Scripture Verses:\n\n";
+      results.verses.forEach((v, i) => {
+        responseText += `${v.Reference} (${v.Theme})\n`;
+        responseText += `"${v.KJV_Text}"\n\n`;
+      });
+    }
+    
+    if (results.sermons.length > 0) {
+      responseText += "\n🎤 Related Sermons:\n\n";
+      results.sermons.forEach((s, i) => {
+        responseText += `• ${s.title} by ${s.pastor}\n`;
+        responseText += `  ${s.summary}\n\n`;
+      });
+    }
+    
+    if (!results.verses.length && !results.sermons.length) {
+      responseText = `No exact matches found for "${query}". Try searching for themes like: hope, peace, forgiveness, strength, gratitude, healing, faith, love, or patience.`;
+    }
+
+    return NextResponse.json({ response: responseText.trim() });
+  } catch (error) {
+    console.error("Insights API error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch insights" },
+      { status: 500 }
+    );
+  }
+}
