@@ -9,19 +9,30 @@ import {
   Loader2,
   MessageCircle,
   Shield,
-  Zap,
   ChevronDown
 } from "lucide-react";
 import ScriptureLink from "./components/ScriptureLink";
+import dynamic from "next/dynamic";
+
+// Dynamic import for CommunityMap (client-side only, no SSR)
+const CommunityMap = dynamic(() => import("./components/CommunityMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="glass-card p-6 sm:p-8 h-[600px] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br from-azure-500 to-ocean-400 flex items-center justify-center animate-pulse">
+          <Heart className="w-6 h-6 text-white" />
+        </div>
+        <p className="text-gray-500 dark:text-gray-400">Loading Community Prayer Map...</p>
+      </div>
+    </div>
+  ),
+});
 
 export default function HomePage() {
   const [prayerText, setPrayerText] = useState("");
   const [prayerResponse, setPrayerResponse] = useState<any>(null);
   const [loadingPrayer, setLoadingPrayer] = useState(false);
-
-  const [theme, setTheme] = useState("");
-  const [insightResult, setInsightResult] = useState<string | null>(null);
-  const [loadingInsight, setLoadingInsight] = useState(false);
 
   // --- Call Pastor Hope API ---
   const handlePraySubmit = async () => {
@@ -40,26 +51,6 @@ export default function HomePage() {
       setPrayerResponse({ error: "⚠️ Unable to connect to Pastor Hope." });
     } finally {
       setLoadingPrayer(false);
-    }
-  };
-
-  // --- Call Insights API ---
-  const handleInsightSearch = async () => {
-    if (!theme.trim()) return;
-    setLoadingInsight(true);
-    setInsightResult(null);
-    try {
-      const res = await fetch("/api/insights", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme }),
-      });
-      const data = await res.json();
-      setInsightResult(data.response);
-    } catch (err) {
-      setInsightResult("⚠️ Error: Unable to fetch insights.");
-    } finally {
-      setLoadingInsight(false);
     }
   };
 
@@ -193,22 +184,22 @@ export default function HomePage() {
           ============================================ */}
       <section id="prayer-section" className="py-16 sm:py-20">
         <div className="section-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* --- LEFT PANEL: Pray with Me (Pastor Hope) --- */}
-            <div className="glass-card p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-azure-500 to-ocean-400 flex items-center justify-center shadow-lg shadow-azure-500/30">
-                  <Heart className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Pray with Me
-                  </h2>
-                  <p className="text-azure-600 dark:text-azure-400 font-medium">Pastor Hope</p>
-                </div>
+          {/* Pray with Me Card - Full Width */}
+          <div className="glass-card p-6 sm:p-8 mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-azure-500 to-ocean-400 flex items-center justify-center shadow-lg shadow-azure-500/30">
+                <Heart className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Pray with Me
+                </h2>
+                <p className="text-azure-600 dark:text-azure-400 font-medium">Pastor Hope</p>
+              </div>
+            </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Input Section */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -241,145 +232,81 @@ export default function HomePage() {
                 </button>
               </div>
 
-              {/* Pastor Hope's Response */}
-              {prayerResponse && !prayerResponse.error && (
-                <div className="mt-6 response-card animate-slide-up">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b border-azure-200 dark:border-azure-800/30">
-                    <Sparkles className="w-5 h-5 text-azure-500" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Pastor Hope's Prayer Response
-                    </h3>
-                  </div>
-                  
-                  <div className="space-y-4 text-gray-700 dark:text-gray-200">
-                    {prayerResponse.greeting && (
-                      <p className="font-semibold text-azure-700 dark:text-azure-300">
-                        {prayerResponse.greeting}
-                      </p>
-                    )}
+              {/* Response Section */}
+              <div>
+                {prayerResponse && !prayerResponse.error && (
+                  <div className="response-card animate-slide-up h-full">
+                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-azure-200 dark:border-azure-800/30">
+                      <Sparkles className="w-5 h-5 text-azure-500" />
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Pastor Hope's Prayer Response
+                      </h3>
+                    </div>
                     
-                    {prayerResponse.acknowledgement && (
-                      <p className="leading-relaxed">
-                        <ScriptureLink text={prayerResponse.acknowledgement} />
-                      </p>
-                    )}
-                    
-                    {prayerResponse.scripture && (
-                      <blockquote className="border-l-4 border-azure-500 pl-4 py-2 bg-azure-50/50 dark:bg-azure-900/20 rounded-r-lg italic text-azure-800 dark:text-azure-200">
-                        <ScriptureLink text={prayerResponse.scripture} />
-                      </blockquote>
-                    )}
-                    
-                    {prayerResponse.pastoral_voice && (
-                      <p className="leading-relaxed">
-                        <ScriptureLink text={prayerResponse.pastoral_voice} />
-                      </p>
-                    )}
-                    
-                    {prayerResponse.prayer && (
-                      <div className="p-4 rounded-xl bg-gradient-to-r from-azure-500/10 to-aqua-500/10 dark:from-azure-900/30 dark:to-aqua-900/30 border border-azure-200/50 dark:border-azure-700/30">
-                        <p className="text-gray-800 dark:text-gray-100 leading-relaxed">
-                          <ScriptureLink text={prayerResponse.prayer} />
+                    <div className="space-y-4 text-gray-700 dark:text-gray-200 max-h-[350px] overflow-y-auto pr-2">
+                      {prayerResponse.greeting && (
+                        <p className="font-semibold text-azure-700 dark:text-azure-300">
+                          {prayerResponse.greeting}
                         </p>
-                      </div>
-                    )}
-                    
-                    {prayerResponse.declaration && (
-                      <p className="font-semibold text-cobalt-600 dark:text-aqua-400">
-                        <ScriptureLink text={prayerResponse.declaration} />
+                      )}
+                      
+                      {prayerResponse.acknowledgement && (
+                        <p className="leading-relaxed">
+                          <ScriptureLink text={prayerResponse.acknowledgement} />
+                        </p>
+                      )}
+                      
+                      {prayerResponse.scripture && (
+                        <blockquote className="border-l-4 border-azure-500 pl-4 py-2 bg-azure-50/50 dark:bg-azure-900/20 rounded-r-lg italic text-azure-800 dark:text-azure-200">
+                          <ScriptureLink text={prayerResponse.scripture} />
+                        </blockquote>
+                      )}
+                      
+                      {prayerResponse.pastoral_voice && (
+                        <p className="leading-relaxed">
+                          <ScriptureLink text={prayerResponse.pastoral_voice} />
+                        </p>
+                      )}
+                      
+                      {prayerResponse.prayer && (
+                        <div className="p-4 rounded-xl bg-gradient-to-r from-azure-500/10 to-aqua-500/10 dark:from-azure-900/30 dark:to-aqua-900/30 border border-azure-200/50 dark:border-azure-700/30">
+                          <p className="text-gray-800 dark:text-gray-100 leading-relaxed">
+                            <ScriptureLink text={prayerResponse.prayer} />
+                          </p>
+                        </div>
+                      )}
+                      
+                      {prayerResponse.declaration && (
+                        <p className="font-semibold text-cobalt-600 dark:text-aqua-400">
+                          <ScriptureLink text={prayerResponse.declaration} />
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {prayerResponse?.error && (
+                  <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400">
+                    {prayerResponse.error}
+                  </div>
+                )}
+
+                {!prayerResponse && (
+                  <div className="h-full flex items-center justify-center p-8 rounded-xl border-2 border-dashed border-gray-200 dark:border-slate-700">
+                    <div className="text-center">
+                      <Sparkles className="w-10 h-10 mx-auto mb-3 text-azure-400 dark:text-azure-500" />
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Share your prayer and Pastor Hope will respond with Scripture-based encouragement
                       </p>
-                    )}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {prayerResponse?.error && (
-                <div className="mt-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400">
-                  {prayerResponse.error}
-                </div>
-              )}
-            </div>
-
-            {/* --- RIGHT PANEL: Insights Explorer --- */}
-            <div className="glass-card p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-aqua-500 to-cobalt-500 flex items-center justify-center shadow-lg shadow-aqua-500/30">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Insights Explorer
-                  </h2>
-                  <p className="text-aqua-600 dark:text-aqua-400 font-medium">Discover Scripture</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Search by theme or emotion
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder='Enter theme (e.g. "forgiveness", "healing", "hope")'
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleInsightSearch()}
-                  />
-                </div>
-
-                <button
-                  onClick={handleInsightSearch}
-                  disabled={loadingInsight || !theme.trim()}
-                  className="btn-secondary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loadingInsight ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Searching...
-                    </>
-                  ) : (
-                    <>
-                      <BookOpen className="w-5 h-5" />
-                      Search Insights
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Insights Result */}
-              {insightResult && (
-                <div className="mt-6 response-card animate-slide-up">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b border-azure-200 dark:border-azure-800/30">
-                    <BookOpen className="w-5 h-5 text-aqua-500" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Scripture Insights
-                    </h3>
-                  </div>
-                  <div className="whitespace-pre-line text-gray-700 dark:text-gray-200 leading-relaxed">
-                    {insightResult}
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Theme Suggestions */}
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Popular themes:</p>
-                <div className="flex flex-wrap gap-2">
-                  {['hope', 'peace', 'forgiveness', 'strength', 'gratitude', 'healing'].map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setTheme(t)}
-                      className="px-3 py-1.5 text-sm rounded-lg bg-azure-100 dark:bg-azure-900/30 text-azure-700 dark:text-azure-300 hover:bg-azure-200 dark:hover:bg-azure-800/40 transition-colors capitalize"
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Community Prayer Map - Full Width */}
+          <CommunityMap onPrayClick={scrollToPrayer} />
         </div>
       </section>
 
