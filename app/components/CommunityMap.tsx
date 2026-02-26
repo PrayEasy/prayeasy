@@ -314,7 +314,7 @@ export default function CommunityMap({ onPrayClick }: CommunityMapProps) {
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Tiled_web_map_numbering.png/320px-Tiled_web_map_numbering.png"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {prayerIcon && praiseIcon && filteredPrayers.map((prayer) => (
             <Marker
