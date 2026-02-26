@@ -35,6 +35,18 @@ export function Footer() {
                 Home
               </Link>
               <Link 
+                href="/devotionals" 
+                className="text-azure-100 dark:text-slate-300 hover:text-white transition-colors text-sm"
+              >
+                Daily Devotionals
+              </Link>
+              <Link 
+                href="/bible" 
+                className="text-azure-100 dark:text-slate-300 hover:text-white transition-colors text-sm"
+              >
+                Bible Deep Dive
+              </Link>
+              <Link 
                 href="/prayers" 
                 className="text-azure-100 dark:text-slate-300 hover:text-white transition-colors text-sm"
               >

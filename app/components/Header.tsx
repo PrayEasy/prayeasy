@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
-import { Menu, X, BookOpen, Home, PenTool } from "lucide-react";
+import { Menu, X, BookOpen, Home, Sun, BookMarked } from "lucide-react";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home },
+    { href: "/devotionals", label: "Devotionals", icon: Sun },
+    { href: "/bible", label: "Bible Study", icon: BookMarked },
     { href: "/prayers", label: "My Prayers", icon: BookOpen },
   ];
 
