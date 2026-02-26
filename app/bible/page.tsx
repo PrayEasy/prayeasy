@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, BookOpen, Sparkles, Loader2, ChevronRight, Hash, Tag, RefreshCw, BookMarked } from "lucide-react";
 
 const THEME_SUGGESTIONS = [
@@ -50,7 +51,9 @@ interface BibleResult {
   prayerApplication: string;
 }
 
-export default function BiblePage() {
+// Inner component that uses searchParams
+function BiblePageContent() {
+  const searchParams = useSearchParams();
   const [searchMode, setSearchMode] = useState<SearchMode>("theme");
   const [themeQuery, setThemeQuery] = useState("");
   const [book, setBook] = useState("");
@@ -60,7 +63,74 @@ export default function BiblePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [streamProgress, setStreamProgress] = useState(0);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Handle URL query parameters on mount
+  useEffect(() => {
+    if (initialLoadDone) return;
+    
+    const verseParam = searchParams.get("verse");
+    const themeParam = searchParams.get("theme");
+    
+    if (verseParam) {
+      // Pre-load a specific verse from URL (e.g., ?verse=Philippians+4:6-7)
+      setSearchMode("verse");
+      const decodedVerse = decodeURIComponent(verseParam);
+      
+      // Parse the verse reference (e.g., "Philippians 4:6-7" or "John 3:16")
+      const match = decodedVerse.match(/^(.+?)\s+(\d+)(?::(.+))?$/);
+      if (match) {
+        const [, bookName, chapterNum, verseNum] = match;
+        setBook(bookName);
+        setChapter(chapterNum);
+        if (verseNum) setVerse(verseNum);
+        
+        // Auto-search after setting values
+        setInitialLoadDone(true);
+        setTimeout(() => {
+          handleVerseSearchDirect(bookName, chapterNum, verseNum || "");
+        }, 100);
+      }
+    } else if (themeParam) {
+      // Pre-load a theme search (e.g., ?theme=hope)
+      setSearchMode("theme");
+      setThemeQuery(decodeURIComponent(themeParam));
+      setInitialLoadDone(true);
+      setTimeout(() => {
+        handleThemeSearch(decodeURIComponent(themeParam));
+      }, 100);
+    } else {
+      setInitialLoadDone(true);
+    }
+  }, [searchParams, initialLoadDone]);
+
+  // Direct verse search with explicit params (for auto-search from URL)
+  const handleVerseSearchDirect = async (bookParam: string, chapterParam: string, verseParam: string) => {
+    if (!bookParam?.trim() || !chapterParam?.trim()) return;
+    setLoading(true);
+    setResult(null);
+    setError("");
+    setStreamProgress(0);
+    try {
+      const reference = verseParam?.trim()
+        ? `${bookParam} ${chapterParam}:${verseParam}`
+        : `${bookParam} ${chapterParam}`;
+      const res = await fetch("/api/bible", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "verse", query: reference }),
+      });
+      if (!res.ok) throw new Error("Lookup failed");
+      await handleStreamResponse(res);
+    } catch (err) {
+      setError("Unable to look up this passage. Please try again.");
+    } finally {
+      setLoading(false);
+      setStreamProgress(0);
+      setTimeout(() => resultRef?.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    }
+  };
 
   const handleThemeSearch = async (queryOverride?: string) => {
     const query = queryOverride ?? themeQuery;
@@ -471,5 +541,35 @@ export default function BiblePage() {
         </section>
       )}
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function BiblePageLoading() {
+  return (
+    <div className="animate-fade-in">
+      <section className="relative overflow-hidden py-12 sm:py-16 bg-gradient-to-br from-cobalt-600 via-azure-500 to-ocean-400 dark:from-cobalt-900 dark:via-cobalt-800 dark:to-azure-900">
+        <div className="section-container text-center text-white">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-sm font-medium mb-5">
+            <BookMarked className="w-4 h-4" />
+            <span>Loading...</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">Bible Deep Dive</h1>
+          <p className="text-azure-100 text-lg">Loading scripture explorer...</p>
+        </div>
+      </section>
+      <div className="py-20 text-center">
+        <Loader2 className="w-8 h-8 animate-spin mx-auto text-azure-500" />
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function BiblePage() {
+  return (
+    <Suspense fallback={<BiblePageLoading />}>
+      <BiblePageContent />
+    </Suspense>
   );
 }

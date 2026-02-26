@@ -12,6 +12,7 @@ import {
   Zap,
   ChevronDown
 } from "lucide-react";
+import ScriptureLink from "./components/ScriptureLink";
 
 export default function HomePage() {
   const [prayerText, setPrayerText] = useState("");
@@ -258,30 +259,34 @@ export default function HomePage() {
                     )}
                     
                     {prayerResponse.acknowledgement && (
-                      <p className="leading-relaxed">{prayerResponse.acknowledgement}</p>
+                      <p className="leading-relaxed">
+                        <ScriptureLink text={prayerResponse.acknowledgement} />
+                      </p>
                     )}
                     
                     {prayerResponse.scripture && (
                       <blockquote className="border-l-4 border-azure-500 pl-4 py-2 bg-azure-50/50 dark:bg-azure-900/20 rounded-r-lg italic text-azure-800 dark:text-azure-200">
-                        {prayerResponse.scripture}
+                        <ScriptureLink text={prayerResponse.scripture} />
                       </blockquote>
                     )}
                     
                     {prayerResponse.pastoral_voice && (
-                      <p className="leading-relaxed">{prayerResponse.pastoral_voice}</p>
+                      <p className="leading-relaxed">
+                        <ScriptureLink text={prayerResponse.pastoral_voice} />
+                      </p>
                     )}
                     
                     {prayerResponse.prayer && (
                       <div className="p-4 rounded-xl bg-gradient-to-r from-azure-500/10 to-aqua-500/10 dark:from-azure-900/30 dark:to-aqua-900/30 border border-azure-200/50 dark:border-azure-700/30">
                         <p className="text-gray-800 dark:text-gray-100 leading-relaxed">
-                          {prayerResponse.prayer}
+                          <ScriptureLink text={prayerResponse.prayer} />
                         </p>
                       </div>
                     )}
                     
                     {prayerResponse.declaration && (
                       <p className="font-semibold text-cobalt-600 dark:text-aqua-400">
-                        {prayerResponse.declaration}
+                        <ScriptureLink text={prayerResponse.declaration} />
                       </p>
                     )}
                   </div>
