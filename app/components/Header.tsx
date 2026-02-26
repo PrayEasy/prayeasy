@@ -12,7 +12,7 @@ export function Header() {
     { href: "/", label: "Home", icon: Home },
     { href: "/devotionals", label: "Devotionals", icon: Sun },
     { href: "/bible", label: "Bible Study", icon: BookMarked },
-    { href: "/prayers", label: "My Prayers", icon: BookOpen },
+    { href: "/prayers/journal", label: "Prayer Journal", icon: BookOpen },
   ];
 
   return (

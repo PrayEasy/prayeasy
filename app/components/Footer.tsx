@@ -47,10 +47,10 @@ export function Footer() {
                 Bible Deep Dive
               </Link>
               <Link 
-                href="/prayers" 
+                href="/prayers/journal" 
                 className="text-azure-100 dark:text-slate-300 hover:text-white transition-colors text-sm"
               >
-                My Prayers
+                Prayer Journal
               </Link>
             </nav>
           </div>
