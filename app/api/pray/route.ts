@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 
+// NOTE: Occasional JSON parsing errors from OpenAI API have been observed
+// during testing but do not interfere with data capture. Monitor if this becomes frequent.
+
 // Lazy initialization to avoid build-time errors
 function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -77,7 +80,8 @@ Always respond ONLY as valid JSON with the following 6 fields:
 - DO NOT include numbers, step labels, or bullet points in the content. 
 - DO NOT insert words like "Step 1, Greeting" inside the text. 
 - Each field must be warm, natural, pastoral, Spirit-led.
-- The "prayer" field MUST **start with the words: 'Pray with me...'** to invite the user into prayer.`,
+- The "prayer" field MUST **start with the words: 'Pray with me...'** to invite the user into prayer.
+- ALWAYS use NUMERIC format for Bible references (e.g., "Philippians 4:6-7", "John 3:16", "1 Corinthians 13:4-7"). NEVER spell out chapter or verse numbers (e.g., do NOT write "four, verse six and seven").`,
         },
         {
           role: "user",
