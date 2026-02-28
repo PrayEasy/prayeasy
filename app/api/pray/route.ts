@@ -24,18 +24,53 @@ function getSupabaseClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
-// Simple emotion detection for database logging
+// Expanded emotion detection for database logging
+// Maps to 29 valid emotions - "Faith" is the default fallback (NOT "General")
 function detectEmotion(input: string): string {
   const lower = input.toLowerCase();
-  if (lower.includes("sad") || lower.includes("lonely") || lower.includes("depressed") || lower.includes("grief") || lower.includes("loss")) return "Sadness";
-  if (lower.includes("worried") || lower.includes("anxious") || lower.includes("afraid") || lower.includes("fear") || lower.includes("stress")) return "Anxiety";
-  if (lower.includes("thank") || lower.includes("grateful") || lower.includes("blessed")) return "Gratitude";
-  if (lower.includes("hope") || lower.includes("trust") || lower.includes("faith")) return "Hope";
-  if (lower.includes("angry") || lower.includes("frustrated") || lower.includes("upset")) return "Frustration";
-  if (lower.includes("pain") || lower.includes("hurt") || lower.includes("sick") || lower.includes("ill") || lower.includes("heal")) return "Concern";
-  if (lower.includes("overwhelm") || lower.includes("tired") || lower.includes("exhaust")) return "Overwhelm";
-  if (lower.includes("joy") || lower.includes("happy") || lower.includes("celebrate")) return "Joy";
-  return "General";
+  
+  // Sadness / Grief / Loneliness
+  if (lower.includes("sad") || lower.includes("lonely") || lower.includes("depressed") || lower.includes("grief") || lower.includes("loss") || lower.includes("crying") || lower.includes("tears")) return "Sadness";
+  
+  // Anxiety / Fear / Worry
+  if (lower.includes("worried") || lower.includes("anxious") || lower.includes("afraid") || lower.includes("fear") || lower.includes("stress") || lower.includes("nervous") || lower.includes("panic")) return "Anxiety";
+  
+  // Gratitude / Thankfulness
+  if (lower.includes("thank") || lower.includes("grateful") || lower.includes("blessed") || lower.includes("appreciate") || lower.includes("praise")) return "Gratitude";
+  
+  // Hope / Trust
+  if (lower.includes("hope") || lower.includes("trust") || lower.includes("believe") || lower.includes("waiting on god") || lower.includes("looking forward")) return "Hope";
+  
+  // Frustration / Anger
+  if (lower.includes("angry") || lower.includes("frustrated") || lower.includes("upset") || lower.includes("annoyed") || lower.includes("can't seem to") || lower.includes("unanswered")) return "Frustration";
+  
+  // Concern / Health / Healing
+  if (lower.includes("pain") || lower.includes("hurt") || lower.includes("sick") || lower.includes("ill") || lower.includes("heal") || lower.includes("surgery") || lower.includes("hospital") || lower.includes("doctor") || lower.includes("medical") || lower.includes("health")) return "Concern";
+  
+  // Overwhelm / Exhaustion
+  if (lower.includes("overwhelm") || lower.includes("tired") || lower.includes("exhaust") || lower.includes("too much") || lower.includes("struggling") || lower.includes("burden")) return "Overwhelm";
+  
+  // Joy / Celebration
+  if (lower.includes("joy") || lower.includes("happy") || lower.includes("celebrate") || lower.includes("excited") || lower.includes("wonderful")) return "Joy";
+  
+  // Love / Family / Relationships
+  if (lower.includes("love") || lower.includes("family") || lower.includes("marriage") || lower.includes("husband") || lower.includes("wife") || lower.includes("child") || lower.includes("relationship")) return "Love";
+  
+  // Guidance / Direction
+  if (lower.includes("guide") || lower.includes("direction") || lower.includes("decision") || lower.includes("wisdom") || lower.includes("path") || lower.includes("way")) return "Guidance";
+  
+  // Provision / Financial
+  if (lower.includes("job") || lower.includes("money") || lower.includes("financial") || lower.includes("provide") || lower.includes("provision") || lower.includes("work")) return "Provision";
+  
+  // Peace / Rest
+  if (lower.includes("peace") || lower.includes("calm") || lower.includes("rest") || lower.includes("quiet") || lower.includes("still")) return "Peace";
+  
+  // Strength / Courage
+  if (lower.includes("strength") || lower.includes("strong") || lower.includes("courage") || lower.includes("power") || lower.includes("endure")) return "Strength";
+  
+  // Default to "Faith" - a valid emotion representing general prayer/spiritual connection
+  // NOTE: "General" was removed as it's not one of the 29 valid emotions
+  return "Faith";
 }
 
 export async function POST(req: Request) {
@@ -103,10 +138,16 @@ Always respond ONLY as valid JSON with the following 6 fields:
 
     const parsed = JSON.parse(message);
 
-    // SAVE TO SUPABASE DATABASE
+    // SAVE TO SUPABASE DATABASE - with comprehensive error logging
     try {
       const supabase = getSupabaseClient();
-      if (supabase) {
+      
+      if (!supabase) {
+        // CRITICAL: Log when Supabase client is null - this could cause data loss!
+        console.error("CRITICAL: Supabase client is NULL - prayer will NOT be saved!");
+        console.error("Check environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY");
+        console.error("Prayer text (first 100 chars):", prayerText.substring(0, 100));
+      } else {
         // Combine the pastoral fields for database storage
         const fullResponseText = [
           parsed.greeting,
@@ -118,23 +159,37 @@ Always respond ONLY as valid JSON with the following 6 fields:
         ].filter(Boolean).join("\n\n");
 
         const detectedEmotion = detectEmotion(prayerText);
+        
+        console.log("Attempting to save prayer to database...");
+        console.log("Detected emotion:", detectedEmotion);
+        console.log("Prayer text length:", prayerText.length, "chars");
 
-        const { error: dbError } = await supabase.from("prayers").insert([
+        const { data, error: dbError } = await supabase.from("prayers").insert([
           {
             prayer_text: prayerText,
             response_text: fullResponseText,
             detected_emotion: detectedEmotion,
           },
-        ]);
+        ]).select();
 
         if (dbError) {
-          console.error("Supabase Insert Error:", dbError);
+          console.error("CRITICAL: Supabase Insert Error:", dbError);
+          console.error("Error code:", dbError.code);
+          console.error("Error message:", dbError.message);
+          console.error("Error details:", dbError.details);
+          console.error("Error hint:", dbError.hint);
+          console.error("Prayer text (first 100 chars):", prayerText.substring(0, 100));
         } else {
-          console.log("Prayer saved to database successfully");
+          console.log("✅ Prayer saved to database successfully!");
+          console.log("Inserted record ID:", data?.[0]?.id || "unknown");
+          console.log("Emotion:", detectedEmotion);
         }
       }
     } catch (dbError) {
-      console.error("Database connection error:", dbError);
+      console.error("CRITICAL: Database connection error:", dbError);
+      console.error("Error type:", typeof dbError);
+      console.error("Error stack:", dbError instanceof Error ? dbError.stack : "N/A");
+      console.error("Prayer text (first 100 chars):", prayerText.substring(0, 100));
       // Don't fail the request if database save fails
     }
 
