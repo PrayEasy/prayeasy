@@ -66,7 +66,7 @@ export default function BetaSignupPage() {
           email: formData.email.trim().toLowerCase(),
           phone: formData.phone,
           interested_in_beta: formData.interestedInBeta,
-          source: 'Weekend Event - March 28, 2026',
+          source: 'QR Banner',
         }),
       })
 
