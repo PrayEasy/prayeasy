@@ -24,6 +24,30 @@ function getSupabaseClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
+// NEW: Try to identify the logged-in user from the Authorization header, if one was sent.
+// Returns null (not an error) if there's no header, no token, or verification fails —
+// this must never block a prayer from being submitted.
+async function getUserIdFromRequest(req: Request): Promise<string | null> {
+  try {
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) return null;
+
+    const token = authHeader.slice(7);
+    const supabase = getSupabaseClient();
+    if (!supabase) return null;
+
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data?.user) {
+      console.warn("Could not verify user from Authorization header:", error?.message);
+      return null;
+    }
+    return data.user.id;
+  } catch (err) {
+    console.warn("getUserIdFromRequest failed, continuing without user_id:", err);
+    return null;
+  }
+}
+
 // Expanded emotion detection for database logging
 // Maps to 29 valid emotions - "Faith" is the default fallback (NOT "General")
 function detectEmotion(input: string): string {
@@ -94,6 +118,9 @@ export async function POST(req: Request) {
       );
     }
 
+    // NEW: figure out who's submitting, if anyone. Never blocks submission if this fails.
+    const userId = await getUserIdFromRequest(req);
+
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -163,12 +190,14 @@ Always respond ONLY as valid JSON with the following 6 fields:
         console.log("Attempting to save prayer to database...");
         console.log("Detected emotion:", detectedEmotion);
         console.log("Prayer text length:", prayerText.length, "chars");
+        console.log("User ID (if logged in):", userId || "anonymous");
 
         const { data, error: dbError } = await supabase.from("prayers").insert([
           {
             prayer_text: prayerText,
             response_text: fullResponseText,
             detected_emotion: detectedEmotion,
+            user_id: userId,
           },
         ]).select();
 
