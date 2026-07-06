@@ -36,23 +36,31 @@ export default function HomePage() {
 
   // --- Call Pastor Hope API ---
   const handlePraySubmit = async () => {
-    if (!prayerText.trim()) return;
-    setLoadingPrayer(true);
-    setPrayerResponse(null);
-    try {
-      const res = await fetch("/api/pray", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prayerText }),
-      });
-      const data = await res.json();
-      setPrayerResponse(data);
-    } catch (err) {
-      setPrayerResponse({ error: "⚠️ Unable to connect to Pastor Hope." });
-    } finally {
-      setLoadingPrayer(false);
-    }
-  };
+  if (!prayerText.trim()) return;
+  setLoadingPrayer(true);
+  setPrayerResponse(null);
+  try {
+    const supabase = getSupabase();
+    const { data: { session } } = supabase
+      ? await supabase.auth.getSession()
+      : { data: { session: null } };
+
+    const res = await fetch("/api/pray", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      },
+      body: JSON.stringify({ prayerText }),
+    });
+    const data = await res.json();
+    setPrayerResponse(data);
+  } catch (err) {
+    setPrayerResponse({ error: "⚠️ Unable to connect to Pastor Hope." });
+  } finally {
+    setLoadingPrayer(false);
+  }
+};
 
   const scrollToPrayer = () => {
     document.getElementById('prayer-section')?.scrollIntoView({ behavior: 'smooth' });
