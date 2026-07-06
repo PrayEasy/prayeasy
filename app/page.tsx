@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import ScriptureLink from "./components/ScriptureLink";
 import dynamic from "next/dynamic";
-
+import { getSupabase } from "@/lib/supabase";
 // Dynamic import for CommunityMap (client-side only, no SSR)
 const CommunityMap = dynamic(() => import("./components/CommunityMap"), {
   ssr: false,
