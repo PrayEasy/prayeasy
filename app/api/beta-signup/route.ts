@@ -141,7 +141,7 @@ export async function POST(request: Request) {
         email: email.trim().toLowerCase(),
         phone: phone,
         interested_in_beta: interested_in_beta || false,
-        source: source || 'Website',
+        source: `${source || 'Website'} - ${new Date().toISOString().slice(0, 10)}`, 
       }])
       .select()
 
