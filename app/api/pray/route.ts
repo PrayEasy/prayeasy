@@ -192,14 +192,14 @@ Always respond ONLY as valid JSON with the following 6 fields:
         console.log("Prayer text length:", prayerText.length, "chars");
         console.log("User ID (if logged in):", userId || "anonymous");
 
-        const { data, error: dbError } = await supabase.from("prayers").insert([
+        const { error: dbError } = await supabase.from("prayers").insert([
           {
             prayer_text: prayerText,
             response_text: fullResponseText,
             detected_emotion: detectedEmotion,
             user_id: userId,
           },
-        ]).select();
+        ]);
 
         if (dbError) {
           console.error("CRITICAL: Supabase Insert Error:", dbError);
@@ -210,7 +210,7 @@ Always respond ONLY as valid JSON with the following 6 fields:
           console.error("Prayer text (first 100 chars):", prayerText.substring(0, 100));
         } else {
           console.log("✅ Prayer saved to database successfully!");
-          console.log("Inserted record ID:", data?.[0]?.id || "unknown");
+          
           console.log("Emotion:", detectedEmotion);
         }
       }
