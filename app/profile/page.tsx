@@ -48,8 +48,8 @@ export default function ProfilePage() {
     <div style={{ maxWidth: 400, margin: "4rem auto", padding: "2rem" }}>
       <h1>Your Profile</h1>
       <p>{profile.email}</p>
-      <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" style={{ width: "100%", padding: "0.75rem", margin: "0.5rem 0", borderRadius: 8, border: "1px solid #ccc" }} />
-      <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" style={{ width: "100%", padding: "0.75rem", margin: "0.5rem 0", borderRadius: 8, border: "1px solid #ccc" }} />
+      <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" style={{ width: "100%", padding: "0.75rem", margin: "0.5rem 0", borderRadius: 8, border: "1px solid #ccc", background: "#ffffff", color: "#111827" }} />
+      <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" style={{ width: "100%", padding: "0.75rem", margin: "0.5rem 0", borderRadius: 8, border: "1px solid #ccc", background: "#ffffff", color: "#111827" }} />
       <button onClick={handleSave} disabled={saving} style={{ width: "100%", padding: "0.75rem", borderRadius: 8, background: "#3B82F6", color: "white", border: "none", marginTop: "0.5rem" }}>
         {saving ? "Saving..." : "Save"}
       </button>
