@@ -33,7 +33,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
-          style={{ width: "100%", padding: "0.75rem", margin: "1rem 0", borderRadius: 8, border: "1px solid #ccc" }}
+          style={{ width: "100%", padding: "0.75rem", margin: "1rem 0", borderRadius: 8, border: "1px solid #ccc", background: "#ffffff", color: "#111827" }}
         />
         <button type="submit" disabled={status === "sending"} style={{ width: "100%", padding: "0.75rem", borderRadius: 8, background: "#3B82F6", color: "white", border: "none" }}>
           {status === "sending" ? "Sending..." : "Send Magic Link"}
