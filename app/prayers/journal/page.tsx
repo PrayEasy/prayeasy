@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 
 // Theme/emotion options for filtering
+// NOTE: Matches the 14 categories detectEmotion() in /api/pray/route.ts can actually return.
+// "General" was removed (detectEmotion() never returns it - dead filter, always zero results).
+// Faith, Love, Guidance, Provision, Peace, and Strength were added (real categories that had no button).
 const EMOTION_OPTIONS = [
   "All",
   "Sadness",
@@ -27,7 +30,12 @@ const EMOTION_OPTIONS = [
   "Concern",
   "Overwhelm",
   "Joy",
-  "General"
+  "Love",
+  "Guidance",
+  "Provision",
+  "Peace",
+  "Strength",
+  "Faith"
 ];
 
 // Date range options
@@ -39,6 +47,7 @@ const DATE_RANGES = [
 ];
 
 // Emotion badge colors
+// NOTE: Added colors for the six categories that were previously falling back to the gray "General" style.
 const EMOTION_COLORS: Record<string, string> = {
   Sadness: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
   Anxiety: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
@@ -48,6 +57,12 @@ const EMOTION_COLORS: Record<string, string> = {
   Concern: "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300",
   Overwhelm: "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300",
   Joy: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300",
+  Love: "bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300",
+  Guidance: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
+  Provision: "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300",
+  Peace: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300",
+  Strength: "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300",
+  Faith: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300",
   General: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
 };
 
@@ -256,7 +271,7 @@ export default function PrayerJournalPage() {
                     Theme / Emotion
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {EMOTION_OPTIONS.slice(0, 6).map((emotion) => (
+                    {EMOTION_OPTIONS.slice(0, 8).map((emotion) => (
                       <button
                         key={emotion}
                         onClick={() => setSelectedEmotion(emotion)}
@@ -271,7 +286,7 @@ export default function PrayerJournalPage() {
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {EMOTION_OPTIONS.slice(6).map((emotion) => (
+                    {EMOTION_OPTIONS.slice(8).map((emotion) => (
                       <button
                         key={emotion}
                         onClick={() => setSelectedEmotion(emotion)}
@@ -465,3 +480,4 @@ export default function PrayerJournalPage() {
     </div>
   );
 }
+
