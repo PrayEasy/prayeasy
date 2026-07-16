@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { BookOpen, Sun, Sunrise, Heart, Star, Calendar, ChevronLeft, ChevronRight, Sparkles, Cross } from "lucide-react";
 
-// 7 curated daily devotionals cycling by day of year
+// Devotionals - now covering all 14 emotion categories detectEmotion() can return,
+// plus the original "Grace" entry (not a detectEmotion() output, kept for day-of-week rotation).
 const DEVOTIONALS = [
   {
     id: 1,
@@ -109,6 +111,126 @@ const DEVOTIONALS = [
     reflection: "Joy is different from happiness. Happiness is circumstantial — it comes and goes with our situations. Biblical joy is rooted in the unchanging character of God. David wrote this psalm while fleeing danger, yet he was filled with joy in God's presence. Joy is not the absence of difficulty; it is the presence of God in the midst of difficulty. You can be joyful today, not because life is easy, but because God is here.",
     prayerPrompt: "Lord, let Your presence be more real to me today than my circumstances. Fill me with the joy that comes from knowing You — a joy that the world cannot give and cannot take away.",
     practicePoint: "Spend 5 minutes in worship today — a song, a psalm, or simply telling God who He is to you."
+  },
+  {
+    id: 8,
+    theme: "Sadness",
+    title: "Near to the Brokenhearted",
+    emoji: "💧",
+    color: "from-slate-500 to-blue-400",
+    accentColor: "slate",
+    scripture: {
+      reference: "Psalm 34:18",
+      text: "Yahweh is near to those who have a broken heart, and saves those who have a crushed spirit."
+    },
+    reflection: "Grief doesn't mean your faith is weak — it means your heart is capable of loving something enough to feel its loss. But there's a second truth sitting right alongside the sadness: you are not defined by this moment. You are still a beloved child of God, held by Him, even while you grieve. From where God stands, this chapter of sorrow is real, but it is not the whole story — He sees what's beyond it, even when you can't yet.",
+    prayerPrompt: "Lord, I don't have the strength to pretend I'm fine today. Thank You for calling me Yours even in this. Help me trust that You see further than I can right now.",
+    practicePoint: "Name today's sadness honestly to God in one sentence, then remind yourself out loud: 'I am still His.'"
+  },
+  {
+    id: 9,
+    theme: "Anxiety",
+    title: "Casting Every Worry",
+    emoji: "🕯️",
+    color: "from-amber-500 to-orange-400",
+    accentColor: "amber",
+    scripture: {
+      reference: "1 Peter 5:7",
+      text: "casting all your worries on him, because he cares for you."
+    },
+    reflection: "Anxiety convinces us the worry is ours alone to carry — that letting go means losing control. But identity changes the equation: you are not a person left to manage every threat alone. You are cared for, specifically and personally, by the One who already knows the outcome you're afraid of. Anxiety often speaks loudly about what might happen; faith is choosing, deliberately, to hand the weight of that over instead of gripping it tighter.",
+    prayerPrompt: "Father, I'm anxious about what I can't control. I hand this to You today — not because the fear disappeared, but because I trust who You are more than what I feel.",
+    practicePoint: "Write down the loudest worry in your mind, then take one concrete action today that puts it in God's hands — a specific prayer, a call to someone who can help, or simply setting the worry down deliberately before you sleep."
+  },
+  {
+    id: 10,
+    theme: "Gratitude",
+    title: "In Everything Give Thanks",
+    emoji: "🙏",
+    color: "from-green-500 to-emerald-400",
+    accentColor: "green",
+    scripture: {
+      reference: "1 Thessalonians 5:18",
+      text: "In everything give thanks, for this is the will of God in Christ Jesus toward you."
+    },
+    reflection: "Gratitude in hard seasons isn't pretending the difficulty away — it's a decision to notice God's presence even inside it. This is where identity and gratitude meet: you give thanks not because everything is easy, but because you know who you belong to, and that doesn't change with your circumstances. Gratitude is one of the clearest ways faith shows up in ordinary days, not just the extraordinary ones.",
+    prayerPrompt: "Thank You, God — not just for the big wins, but for the ordinary mercies I usually walk past. Help me see You even in what's small today.",
+    practicePoint: "Name three specific things from today — not vague categories — that you're grateful for before you sleep tonight."
+  },
+  {
+    id: 11,
+    theme: "Frustration",
+    title: "Slow to Anger",
+    emoji: "🔥",
+    color: "from-red-500 to-rose-400",
+    accentColor: "red",
+    scripture: {
+      reference: "James 1:19-20",
+      text: "So, then, my beloved brothers, let every man be swift to hear, slow to speak, and slow to anger; for the anger of man doesn't produce the righteousness of God."
+    },
+    reflection: "Frustration often comes from things staying broken longer than we think they should — an unanswered prayer, a stuck situation. It's tempting to let that frustration drive the next move. But you're called something different here: beloved. That identity doesn't erase the frustration, but it does change how you're invited to carry it — slower to react, quicker to listen, trusting there's a bigger perspective than the one frustration hands you in the moment.",
+    prayerPrompt: "Lord, I'm frustrated, and I don't want to fake otherwise. Help me slow down before this frustration decides what I say or do next. Show me what You see that I can't yet.",
+    practicePoint: "Before responding to whatever's frustrating you today, pause for one full minute of silence — then take one small, deliberate step forward instead of reacting."
+  },
+  {
+    id: 12,
+    theme: "Concern",
+    title: "Sustained on the Sickbed",
+    emoji: "🩹",
+    color: "from-purple-500 to-indigo-400",
+    accentColor: "purple",
+    scripture: {
+      reference: "Psalm 41:3",
+      text: "Yahweh will sustain him on his sickbed, and restore him from his bed of illness."
+    },
+    reflection: "Worry about health — your own or someone else's — touches something deeply vulnerable: our sense of control over the body. This verse doesn't promise healing on our exact timeline; it promises a sustaining presence through the illness itself, however long it lasts. You are not facing this as someone forgotten. You are held, specifically, in the waiting as much as in the healing.",
+    prayerPrompt: "Father, I'm worried about this illness. I ask boldly for healing, and I ask You to sustain me and the ones I love if healing takes longer than I want it to.",
+    practicePoint: "If you're able, reach out today to one person carrying a health concern — a call or text tells them they're not carrying it alone, and neither are you."
+  },
+  {
+    id: 13,
+    theme: "Overwhelm",
+    title: "Come and I Will Give You Rest",
+    emoji: "🌊",
+    color: "from-orange-500 to-amber-400",
+    accentColor: "orange",
+    scripture: {
+      reference: "Matthew 11:28",
+      text: "Come to me, all you who labor and are heavily burdened, and I will give you rest."
+    },
+    reflection: "Overwhelm tells you the only way through is to push harder. Jesus offers a different invitation entirely: come, not push. Rest here isn't about having fewer responsibilities — it's remembering you were never meant to carry this weight solo. Today might be the day you stop proving you can hold everything, and instead let yourself be someone who's allowed to set something down.",
+    prayerPrompt: "Jesus, I'm carrying more than I can hold today. I'm coming to You, not with a solution — just with the weight itself. Show me what I can set down.",
+    practicePoint: "Pick one thing on today's list that can wait until tomorrow, and let it wait without guilt."
+  },
+  {
+    id: 14,
+    theme: "Guidance",
+    title: "He Will Make Your Paths Straight",
+    emoji: "🧭",
+    color: "from-indigo-500 to-blue-400",
+    accentColor: "indigo",
+    scripture: {
+      reference: "Proverbs 3:5-6",
+      text: "Trust in Yahweh with all your heart, and don't lean on your own understanding. In all your ways acknowledge him, and he will make your paths straight."
+    },
+    reflection: "Needing direction can feel like you should already have the answer. But this passage assumes something freeing: leaning only on your own understanding was never the safety net you thought it was. You're not called to figure this out alone — you're invited to acknowledge God first, in this decision, before anywhere else. From where He stands, the path is already clearer than it looks from where you're standing.",
+    prayerPrompt: "Lord, I don't know which way to go. I'm not leaning only on my own understanding today — I'm asking You to make the path clear, one step at a time, and I'm listening before I decide.",
+    practicePoint: "Before making today's decision, pause and ask God for clarity before asking anyone else's opinion first."
+  },
+  {
+    id: 15,
+    theme: "Provision",
+    title: "My God Will Supply",
+    emoji: "🌾",
+    color: "from-teal-500 to-emerald-400",
+    accentColor: "teal",
+    scripture: {
+      reference: "Philippians 4:19",
+      text: "My God will supply every need of yours according to his riches in glory in Christ Jesus."
+    },
+    reflection: "Worry about provision — a job, rent, a bill — can feel like the most practical, least 'spiritual' kind of worry. But provision is squarely within God's care, not separate from it. You are not a person hoping to be noticed by a distant God; you're a child whose need He already sees, met out of real abundance, not scarcity. That doesn't mean the exact provision arrives exactly how or when you'd script it — it means the need itself is already known and already being answered.",
+    prayerPrompt: "Father, You know what I need before I ask. I bring this financial worry to You, trusting Your provision even when I can't see the way yet — and trusting that You see me in it.",
+    practicePoint: "Write down the specific provision you're praying for today — naming it turns a vague worry into a concrete, trackable prayer you can look back on when it's answered."
   }
 ];
 
@@ -116,33 +238,56 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export default function DevotionalsPage() {
+  const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dateDisplay, setDateDisplay] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState("");
   const [mounted, setMounted] = useState(false);
+  // Tracks whether we landed here via a real ?theme= match, vs. the day-of-week fallback.
+  const [isThemeMatch, setIsThemeMatch] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const now = new Date();
     const dayIdx = now.getDay(); // 0-6
-    setCurrentIndex(dayIdx); // Use day of week to pick devotional
     setDayOfWeek(DAY_NAMES[dayIdx] ?? "");
     setDateDisplay(`${MONTH_NAMES[now.getMonth()] ?? ""} ${now.getDate()}, ${now.getFullYear()}`);
-  }, []);
+
+    // NEW: check for a ?theme= URL parameter (e.g. /devotionals?theme=Anxiety)
+    const themeParam = searchParams.get("theme");
+    if (themeParam) {
+      const matchIndex = DEVOTIONALS.findIndex(
+        (dev) => dev.theme.toLowerCase() === themeParam.toLowerCase()
+      );
+      if (matchIndex !== -1) {
+        setCurrentIndex(matchIndex);
+        setIsThemeMatch(true);
+        return;
+      }
+      // No matching devotional for this theme - fall back to day-of-week below.
+    }
+
+    // Default behavior (unchanged): pick by day of week.
+    setCurrentIndex(dayIdx);
+    setIsThemeMatch(false);
+  }, [searchParams]);
 
   const devotional = DEVOTIONALS[currentIndex] ?? DEVOTIONALS[0];
   const totalDevotionals = DEVOTIONALS.length;
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev - 1 + totalDevotionals) % totalDevotionals);
+    setIsThemeMatch(false);
   };
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % totalDevotionals);
+    setIsThemeMatch(false);
   };
 
   const handleSelectDay = (index: number) => {
     setCurrentIndex(index);
+    setIsThemeMatch(false);
   };
 
   if (!mounted) {
@@ -174,11 +319,18 @@ export default function DevotionalsPage() {
           <p className="text-azure-100 text-lg max-w-2xl mx-auto">
             Begin each day anchored in Scripture — reflection, prayer, and purpose for your spiritual journey.
           </p>
-          {dateDisplay && (
+          {isThemeMatch ? (
             <div className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-sm">
-              <Calendar className="w-4 h-4" />
-              <span className="font-semibold">{dayOfWeek}, {dateDisplay}</span>
+              <Sparkles className="w-4 h-4" />
+              <span className="font-semibold">Matched to your prayer: {devotional.theme}</span>
             </div>
+          ) : (
+            dateDisplay && (
+              <div className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-sm">
+                <Calendar className="w-4 h-4" />
+                <span className="font-semibold">{dayOfWeek}, {dateDisplay}</span>
+              </div>
+            )
           )}
         </div>
       </section>
@@ -241,7 +393,7 @@ export default function DevotionalsPage() {
                     </span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-bold mb-1">{devotional?.title ?? ""}</h2>
-                  {dateDisplay && currentIndex === new Date().getDay() && (
+                  {!isThemeMatch && dateDisplay && currentIndex === new Date().getDay() && (
                     <p className="text-white/80 text-sm">Today's Devotional · {dateDisplay}</p>
                   )}
                 </div>
@@ -314,7 +466,7 @@ export default function DevotionalsPage() {
 
               {/* CTA to pray with Pastor Hope */}
               <div className="text-center pt-2">
-                <a
+                
                   href="/#prayer-section"
                   className="btn-primary inline-flex items-center gap-2"
                 >
@@ -335,7 +487,7 @@ export default function DevotionalsPage() {
               All <span className="text-gradient dark:text-gradient-dark">Devotionals</span>
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              Seven devotionals rotating through each week of your spiritual journey
+              Fifteen devotionals covering the full range of what you might be praying about
             </p>
           </div>
 
