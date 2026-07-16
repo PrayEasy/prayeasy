@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { BookOpen, Sun, Sunrise, Heart, Star, Calendar, ChevronLeft, ChevronRight, Sparkles, Cross } from "lucide-react";
 
@@ -237,7 +237,7 @@ const DEVOTIONALS = [
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-export default function DevotionalsPage() {
+function DevotionalsContent() {
   const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dateDisplay, setDateDisplay] = useState("");
@@ -466,7 +466,7 @@ export default function DevotionalsPage() {
 
               {/* CTA to pray with Pastor Hope */}
               <div className="text-center pt-2">
-              <a  
+                <a
                   href="/#prayer-section"
                   className="btn-primary inline-flex items-center gap-2"
                 >
@@ -527,3 +527,20 @@ export default function DevotionalsPage() {
     </div>
   );
 }
+
+export default function DevotionalsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="section-container py-12 animate-fade-in">
+          <div className="h-96 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full border-4 border-azure-200 border-t-azure-500 animate-spin" />
+          </div>
+        </div>
+      }
+    >
+      <DevotionalsContent />
+    </Suspense>
+  );
+}
+
