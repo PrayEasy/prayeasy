@@ -164,6 +164,7 @@ Always respond ONLY as valid JSON with the following 6 fields:
     }
 
     const parsed = JSON.parse(message);
+    const detectedEmotion = detectEmotion(prayerText);
 
     // SAVE TO SUPABASE DATABASE - with comprehensive error logging
     try {
@@ -185,7 +186,7 @@ Always respond ONLY as valid JSON with the following 6 fields:
           parsed.declaration
         ].filter(Boolean).join("\n\n");
 
-        const detectedEmotion = detectEmotion(prayerText);
+        
         
         console.log("Attempting to save prayer to database...");
         console.log("Detected emotion:", detectedEmotion);
