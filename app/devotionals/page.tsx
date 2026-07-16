@@ -466,7 +466,7 @@ export default function DevotionalsPage() {
 
               {/* CTA to pray with Pastor Hope */}
               <div className="text-center pt-2">
-                
+              <a  
                   href="/#prayer-section"
                   className="btn-primary inline-flex items-center gap-2"
                 >
