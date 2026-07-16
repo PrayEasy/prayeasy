@@ -222,7 +222,7 @@ Always respond ONLY as valid JSON with the following 6 fields:
       // Don't fail the request if database save fails
     }
 
-    return NextResponse.json(parsed);
+    return NextResponse.json({ ...parsed, detectedEmotion });
   } catch (error) {
     console.error("Pastor Hope API error:", error);
     return NextResponse.json(
