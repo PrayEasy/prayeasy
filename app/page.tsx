@@ -290,6 +290,35 @@ export default function HomePage() {
                         </p>
                       )}
                     </div>
+
+                    {/* Step C: theme-linking to Bible Study and Devotionals based on detected emotion */}
+                    {prayerResponse.detectedEmotion && (
+                      <div className="mt-4 pt-4 border-t border-azure-200 dark:border-azure-800/30">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          Since this touches on{" "}
+                          <span className="font-semibold text-azure-700 dark:text-azure-300">
+                            {prayerResponse.detectedEmotion}
+                          </span>
+                          , explore more:
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                          <a
+                            href={`/bible?theme=${encodeURIComponent(prayerResponse.detectedEmotion)}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-azure-50 dark:bg-azure-900/30 text-azure-700 dark:text-azure-300 text-sm font-medium hover:bg-azure-100 dark:hover:bg-azure-800/40 transition-colors"
+                          >
+                            <BookOpen className="w-4 h-4" />
+                            Bible Study on {prayerResponse.detectedEmotion}
+                          </a>
+                          <a
+                            href={`/devotionals?theme=${encodeURIComponent(prayerResponse.detectedEmotion)}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-aqua-50 dark:bg-aqua-900/30 text-aqua-700 dark:text-aqua-300 text-sm font-medium hover:bg-aqua-100 dark:hover:bg-aqua-800/40 transition-colors"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            Devotional on {prayerResponse.detectedEmotion}
+                          </a>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -348,3 +377,4 @@ export default function HomePage() {
     </div>
   );
 }
+
